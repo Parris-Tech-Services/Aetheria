@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D&D 5e: The Whispering Woods</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game-container">
+    <div id="stats-bar">
+        <span>HP: <span id="hp" class="stat-val">30</span>/30</span>
+        <span>AC: <span id="ac" class="stat-val">16</span></span>
+        <span>GP: <span id="gold" class="stat-val">10</span></span>
+        <span>LVL: <span id="lvl">1</span> <span id="cls">Fighter</span></span>
+    </div>
+
+    <div id="map-section">
+        <div id="map-view"></div>
+        <div class="movement-pad">
+            <div></div><button onclick="Game.move(0, -1)">▲</button><div></div>
+            <button onclick="Game.move(-1, 0)">◀</button><div></div><button onclick="Game.move(1, 0)">▶</button>
+            <div></div><button onclick="Game.move(0, 1)">▼</button><div></div>
+        </div>
+    </div>
+
+    <div id="interaction-overlay">
+        <h2 id="interaction-title" class="interaction-title">Dialogue</h2>
+        <div id="event-log"></div>
+        <div id="action-buttons" class="controls"></div>
+    </div>
+</div>
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/encounters.js"></script>
+</body>
+</html>
