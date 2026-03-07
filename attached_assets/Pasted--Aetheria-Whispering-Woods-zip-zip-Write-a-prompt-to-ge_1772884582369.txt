@@ -1,0 +1,303 @@
+
+
+Aetheria-Whispering-Woods.zip
+zip
+
+Write a prompt to get replit to upgrade this as much as possible, more maps, more features, more lore, more npc's, more dialogue trees and options
+
+10:53 PM
+
+Ran 5 commands
+Ran 5 commands
+Now I have a thorough understanding of the entire codebase. Let me write a detailed, maximally effective Replit Agent prompt.
+
+
+Created a file, read a file
+Created a file, read a file
+
+Replit upgrade prompt for Aetheria: Whispering Woods
+Aetheria_Replit_Upgrade_Prompt.md
+
+Presented file
+Done
+Here's your fully loaded Replit Agent prompt. I read through all your existing code first — the engine, data, Play page, and the attached tip file — and built this specifically around what you already have. Here's what it targets:
+
+The 10 expansion pillars it instructs Replit to build:
+
+5 new maps — Rotted Barrow dungeon, Ashfields overworld, Tipped Flagon tavern, Boss Chamber, plus an expanded village — each with exit transitions between them
+12 named NPCs with full branching dialogue trees, stat-gated options, and memory of past conversations (e.g. Elara the herbalist, the Hollow King pre-boss monologue, a bard you can hire as a companion)
+6 quests with objectives, trackers, and rewards tied to the NPC system
+12 enemies with unique mechanics — Pack Tactics wolves, Undead Fortitude zombies, a Multiattacking Ash Elemental, and a Legendary Action boss
+20+ items across weapons, armor, consumables, quest items, and readable lore artifacts
+Real class abilities — Action Surge, Second Wind, Spell Slots, Sneak Attack, Cunning Action, etc., all tracked in the combat UI
+Lore Codex with factions, world history, and discoverable entries unlocked through play
+XP leveling with a level-up choice screen
+Full localStorage persistence across all systems
+New UI panels — sidebar tabs, NPC dialogue modal, minimap, quest notifications, combat status conditions
+The bottom of the file includes a ready-to-paste continuation instruction for when Replit runs out of context mid-build.
+
+Aetheria replit upgrade prompt
+Document · MD 
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Aetheria replit upgrade prompt · MD
+Copy
+
+🧙 AETHERIA: WHISPERING WOODS — FULL UPGRADE PROMPT FOR REPLIT AGENT
+Paste this entire prompt into Replit Agent. If it pauses mid-build, follow up with the continuation instruction at the bottom.
+
+CONTEXT: WHAT EXISTS NOW
+This is a React + TypeScript + Zustand browser RPG using a D&D 5e ruleset. The current state:
+
+1 map: "Whispering Woods Edge" (20×10 grid, ASCII layout)
+4 entities: Village Guard, Corrosive Slime, Old Chest, Dire Wolf
+3 classes: Fighter, Wizard, Rogue (basic stat differences, no real class abilities)
+Combat: Turn-based attack/end-turn loop, d20 rolls, basic hit/miss/crit
+No NPC dialogue, no quests, no inventory, no lore, no map transitions, no spells, no XP leveling
+Engine files: client/src/game/data.ts (map + entity data), client/src/game/engine.ts (Zustand store + combat), client/src/pages/Play.tsx (UI renderer)
+MISSION: MASSIVE EXPANSION — DO ALL OF THE FOLLOWING
+1. 🗺️ NEW MAPS (add at minimum 5 total, up from 1)
+Create a Map Registry in data.ts with these maps, each with a 25×15 grid minimum, unique tile types, and thematic entity placement:
+
+Map ID	Name	Theme	New Tile Types
+village	Whispering Woods Edge (expand existing)	Forest village outskirts	Trees T, water ~, bridge =
+dungeon	The Rotted Barrow	Underground crypt	Torch !, pit O, door D
+overworld	The Ashfields	Post-war wasteland	Ruins R, bonfire F, camp C
+tavern	The Tipped Flagon	Interior tavern	Table [, bar B, fireplace f
+boss_chamber	Throne of the Hollow King	Boss arena	Altar A, pillar P, void V
+Each map must define:
+
+ts
+{
+  name: string,
+  layout: string[],  // ASCII grid
+  description: string,  // shown on map enter
+  ambientSound: string, // "forest" | "dungeon" | "wind" | "tavern" | "boss"
+  exits: { direction: "N"|"S"|"E"|"W", targetMapId: string, targetX: number, targetY: number }[]
+}
+Add map transition logic to the engine: when a player walks off a map edge that has an exit defined, fade out and load the new map at the correct entry coordinates.
+
+2. 👥 NPCs & DIALOGUE TREES (add at minimum 12 unique NPCs)
+Add a NPCData registry and a DialogueEngine system. Each NPC must have:
+
+ts
+type NPC = {
+  id: string,
+  name: string,
+  sprite: string,
+  mapId: string,
+  role: "merchant" | "quest_giver" | "lore" | "companion" | "enemy_ally",
+  greeting: string,          // First-time greeting
+  repeatGreeting: string,    // Subsequent interactions
+  dialogueTree: DialogueNode[]
+}
+
+type DialogueNode = {
+  id: string,
+  text: string,             // NPC speaks this
+  options: DialogueOption[]
+}
+
+type DialogueOption = {
+  label: string,            // Player's choice text
+  nextNodeId: string | null, // null = close dialogue
+  requires?: { questFlag?: string, item?: string, stat?: keyof Stats, minValue?: number },
+  effect?: { giveQuest?: string, giveItem?: string, setFlag?: string, adjustRep?: number }
+}
+Required NPCs (minimum):
+
+Village (Whispering Woods Edge):
+
+Elara Mossbind — Herbalist/Healer. Sells potions. Has a 3-branch dialogue tree about the Hollow King's curse, offers to teach Herbalism if player has WIS ≥ 14.
+Guard Captain Theron — Quest giver. Gives quest: "Clear the Rotted Barrow." 4 dialogue options including bribery (CHA check), intimidation (STR check), diplomacy, and refusing.
+Mira the Wanderer — Mysterious traveler with lore about the Ashfields. Unlocks overworld map after talking to her. 5-node dialogue tree with branching lore paths.
+Old Fenwick — Blacksmith. Sells weapons. Complains about goblin raids. Gives side quest: "Retrieve my stolen hammer." Hidden option if player is a Fighter: he offers to upgrade their weapon for free.
+The Rotted Barrow (Dungeon): 5. Brother Aldric — Trapped priest. Asks for rescue. Full 4-branch dialogue: player can free him (gives Blessed Amulet), rob him, ignore him, or ask for information about the crypt's layout. 6. Skeleton Sergeant Vorn — Intelligent undead. Doesn't attack immediately. Will let player pass peacefully if they solve a riddle (WIS/INT check). Has 3 unique lines of unsettling lore dialogue.
+
+The Ashfields (Overworld): 7. Riven — Refugee with amnesia. Quest: "Find my lost family." Dialogue tree has emotional branches; player can be kind (+reputation), cold (neutral), or lie to them (−karma flag). 8. The Ashen Oracle — Ancient being. Speaks in riddles. 6-node dialogue tree; answers 3 questions about the world's lore. If player has completed the dungeon quest, reveals a secret map entrance.
+
+The Tipped Flagon (Tavern): 9. Barkeep Dunna — Sells food buffs ("Hearty Stew" = +5 temp HP). Gossips about all other NPCs. 5 gossip dialogue options, each revealing lore or quest hints. 10. Silas the Fence — Shady merchant. Buys stolen goods. Will pay extra if player has high CHA. Warns player about the Hollow King if trust is built over 2 conversations. 11. Lyra Ashveil — Bard. Can be hired as a temporary companion (gives Bardic Inspiration buff). Her dialogue tree has music-themed branches and she references events the player has done.
+
+Throne of the Hollow King (Boss Chamber): 12. The Hollow King — Final boss NPC/enemy hybrid. Has a full pre-boss dialogue sequence (5 nodes) before combat begins. Player can attempt to reason with him (CHA 16+ check) for an alternate ending dialogue branch. Has unique post-defeat monologue.
+
+3. 📜 QUEST SYSTEM
+Add a QuestManager to the engine with these quests:
+
+ts
+type Quest = {
+  id: string,
+  title: string,
+  description: string,
+  status: "inactive" | "active" | "completed" | "failed",
+  objectives: QuestObjective[],
+  reward: { xp: number, gold: number, item?: string },
+  giver: string  // NPC id
+}
+
+type QuestObjective = {
+  id: string,
+  description: string,
+  type: "kill" | "collect" | "talk" | "reach",
+  targetId: string,
+  count: number,
+  currentCount: number,
+  completed: boolean
+}
+Required Quests:
+
+Quest	Giver	Objectives	Reward
+Clear the Rotted Barrow	Guard Captain Theron	Kill 3 undead + reach the crypt altar	200 XP, 50 gold, Iron Shield
+Elara's Rare Herbs	Elara Mossbind	Collect 3 Moonbloom flowers (random drops in forest)	100 XP, 2× Healing Potion
+Old Fenwick's Hammer	Old Fenwick	Kill goblin boss in dungeon, retrieve "Fenwick's Hammer" item	150 XP, weapon upgrade
+Find Riven's Family	Riven	Talk to 3 NPCs who have clues, then reach family location	175 XP, Karma +2, unique dialogue unlock
+The Oracle's Test	Ashen Oracle	Answer 3 riddles correctly via dialogue choices	300 XP, reveal of boss chamber
+The Final Confrontation	Auto-triggered	Reach the Throne of the Hollow King	500 XP, game completion flag
+Show quest progress in the sidebar. Add a Quest Journal tab with Active/Completed/Failed sections.
+
+4. ⚔️ MORE ENEMIES (at minimum 12, up from 4)
+Expand entities in data.ts with enemy variety across all maps:
+
+ID	Name	Sprite	Map	HP	AC	Atk	Die	Special
+G	Village Guard	💂	village	20	16	+4	d8	NPC (friendly)
+S	Corrosive Slime	🟢	village	15	10	+3	d6	Poison on hit
+W	Dire Wolf	🐺	village	25	14	+5	d8	Pack Tactics (adv if ally nearby)
+B	Giant Bat	🦇	dungeon	12	12	+3	d4	Blindsight, hits from distance
+Z	Shambling Zombie	🧟	dungeon	22	8	+3	d6	Undead Fortitude (survives 1 killing blow on CON save)
+K	Skeleton Archer	💀	dungeon	13	13	+4	d6	Ranged attack, always acts first
+V	Shadow Wraith	👻	dungeon	18	13	+4	d8	Resistance to non-magical damage
+E	Ash Elemental	🌪️	overworld	30	11	+5	d10	Multiattack (2 hits per turn)
+R	Ruined Golem	🗿	overworld	45	18	+6	d12	Slow (moves 1/round), huge damage
+X	Goblin Raider	👺	overworld	10	13	+4	d6	Nimble Escape (disengage as bonus action)
+H	The Hollow King	💀👑	boss_chamber	120	18	+8	d12	Legendary Actions (acts 3x), AoE Necrotic Burst, Frightful Presence
+F	Flameskull	🔥💀	boss_chamber	40	13	+6	d8	Fire Immunity, Rejuvenation (revives after 1 hour if skull not destroyed)
+Each enemy must have:
+
+A lootTable (1–3 items with drop percentages)
+A deathMessage unique string logged to the Chronicle
+xpReward property
+5. 🎒 INVENTORY & ITEMS
+Add a full inventory system:
+
+ts
+type Item = {
+  id: string,
+  name: string,
+  sprite: string,
+  type: "weapon" | "armor" | "consumable" | "quest" | "lore",
+  rarity: "common" | "uncommon" | "rare" | "legendary",
+  description: string,
+  effect?: { stat?: string, modifier?: number, duration?: "permanent" | "combat" | "turn" }
+}
+Required Items (minimum 20):
+
+Consumables: Healing Potion (+2d4+2 HP), Greater Healing Potion (+4d4+4), Antidote (cures poison), Hearty Stew (+5 temp HP), Wizard's Focus (+1 spell save DC for 1 combat)
+Weapons: Iron Sword (+1 ATK), Goblin's Shortbow (ranged, d6), Fenwick's Hammer (d10, bonus vs. constructs), Shadow Blade (d8, advantage in dim light), Hollow King's Crown (legendary, +3 ATK, -2 WIS = "cursed")
+Armor: Leather Armor (+2 AC), Chain Mail (+4 AC, -5 move), Shadow Cloak (advantage on DEX saves), Blessed Amulet (+1 AC, resistance to necrotic)
+Quest Items: Moonbloom Flower, Fenwick's Stolen Hammer, Riven's Family Locket, Barrow Seal (unlocks boss chamber)
+Lore Items: Crumbled Journal, Ancient Coin, Hollow King's Decree (readable in inventory, reveals lore text)
+Show a grid-based Inventory UI (4×5 grid) in the sidebar. Clicking an item shows its stats. Consumables have a "Use" button. Equipment has an "Equip" button that modifies character stats in the engine.
+
+6. 🔮 CLASS ABILITIES
+Implement real class abilities triggered by buttons in the combat UI:
+
+Fighter:
+
+Action Surge (1/rest): Take an extra action this turn. Shows in combat UI as a bonus button.
+Second Wind (1/rest): Heal 1d10 + Fighter level as a bonus action.
+Cleave (passive): On kill, make a free attack on adjacent enemy if one exists.
+Wizard:
+
+Spell Slots: Track 2 Level-1 slots, 1 Level-2 slot (restore on long rest).
+Fire Bolt (cantrip, unlimited): Ranged d10 fire damage.
+Magic Missile (L1 slot): 3 darts, 1d4+1 each, auto-hit.
+Sleep (L1 slot): Incapacitates enemies with ≤15 HP remaining for 2 turns.
+Arcane Recovery (1/day): Restore 1 spell slot.
+Rogue:
+
+Sneak Attack (1/turn): If player has advantage or an ally is adjacent to enemy, add 2d6 bonus damage.
+Cunning Action (bonus action): Dash (double movement) or Hide (impose disadvantage on enemy's next attack).
+Uncanny Dodge (reaction): When hit, halve the damage (1/round).
+Show class abilities in the sidebar with visual slot indicators (filled/empty circles).
+
+7. 🌍 LORE & WORLD-BUILDING
+Add a LoreData file with the following lore entries, discoverable through NPC dialogue, lore items, and exploration:
+
+World History:
+
+"The Age of Radiance" — when Aetheria was a unified kingdom under a benevolent monarchy
+"The Sundering" — the catastrophic war that split the realm and created the Ashfields
+"The Hollow King's Fall" — how the king became corrupted by necrotic magic seeking immortality
+"The Whispering Woods Curse" — why the forest whispers (contains the souls of fallen soldiers)
+Factions:
+
+The Verdant Circle — druids who protect the forest; allied with Elara Mossbind
+The Iron Covenant — mercenaries loyal to whoever pays; Guard Captain Theron is a disillusioned member
+The Remnants — survivors of the Sundering living in the Ashfields; Riven belongs to this group
+The Hollow Court — undead servants of the Hollow King in the Barrow
+Each lore entry should be:
+
+ts
+type LoreEntry = {
+  id: string,
+  title: string,
+  content: string,  // 3–5 sentences of rich lore text
+  unlockedBy: "npc_id" | "item_id" | "map_id" | "quest_id"
+}
+Add a Lore Codex tab to the sidebar. Entries appear greyed out until discovered, then become readable with rich parchment-styled text.
+
+8. 📊 XP, LEVELING & STATS
+Implement proper leveling:
+
+ts
+const XP_THRESHOLDS = [0, 300, 900, 2700, 6500, 14000]; // Levels 1–6
+
+// On reaching new level threshold, trigger level-up screen:
+// Player chooses ONE of:
+// - +2 to a stat of their choice
+// - New class ability (unlocks the next ability in their class list)
+// - +5 max HP
+Show current XP and XP-to-next-level as a progress bar in the sidebar. Play a "level up" juice animation (golden particles, screen flash, sound) when leveling.
+
+9. 💾 PERSISTENCE
+Use localStorage to persist:
+
+Character stats and position
+Quest states (active/completed/flags)
+Inventory contents
+Map states (enemy defeated = stays defeated across sessions)
+Discovered lore entries
+NPC conversation flags (so NPCs remember prior interactions)
+Auto-save after every combat encounter, NPC dialogue completion, quest update, and map transition. Show a subtle "💾 Saved" toast notification.
+
+10. 🎨 UI UPGRADES
+Sidebar tabs: Character | Inventory | Quests | Lore Codex
+NPC Dialogue Modal: Full-screen overlay with NPC portrait emoji, name, dialogue text, and 2–4 clickable option buttons. Options that require stat checks show the required stat and DC.
+Map Transition: Fade-to-black with map name displayed in font-display, then fade in.
+Combat UI: Show enemy sprite + HP bar prominently. Show player available actions as colored dots (green = available, grey = spent). Show status conditions as badge icons.
+Minimap: Small 5×5 grid in bottom corner of main view showing adjacent tiles.
+Floating Quest Notifications: When a quest updates, show a toast in the top-right: "Quest Updated: [name]" with a scroll icon.
+TECHNICAL REQUIREMENTS
+Keep all code in the existing React + TypeScript + Zustand + Vite architecture
+Separate concerns into new files:
+client/src/game/data.ts — all static data (maps, entities, items, lore, NPCs, quests)
+client/src/game/engine.ts — Zustand store, combat logic, movement, leveling
+client/src/game/dialogue.ts — dialogue tree traversal engine
+client/src/game/quest.ts — quest manager logic
+client/src/game/inventory.ts — item/equipment logic
+client/src/pages/Play.tsx — main game renderer
+client/src/components/game/DialogueModal.tsx — NPC dialogue UI
+client/src/components/game/InventoryPanel.tsx — inventory grid UI
+client/src/components/game/QuestJournal.tsx — quest log UI
+client/src/components/game/LoreCodex.tsx — lore entry reader UI
+All data must be typed with strict TypeScript interfaces
+No breaking changes to the existing character creation or database schema unless necessary
+The game must remain playable in a single browser window with no backend calls during gameplay (all game state is client-side; only character creation/load uses the server)
+CONTINUATION INSTRUCTION
+If you run out of context or stop mid-build, paste this:
+
+"Continue the Aetheria upgrade. Pick up exactly where you left off. Do not re-explain what you're doing — just write the code. Focus next on: [paste the specific section you want completed, e.g. 'the NPC dialogue modal component' or 'the Wizard spell system']"
+
