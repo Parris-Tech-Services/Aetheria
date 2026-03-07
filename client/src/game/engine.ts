@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { type Character } from "@shared/schema";
-import { GameData, type EntityData } from "./data";
+import { GameData, type EntityData, type MapInfo } from "./data";
 
 // 5e Mechanics Engine
 
@@ -46,6 +46,19 @@ export type CombatState = {
   log: string[];
 };
 
+export type DialogueState = {
+  isOpen: boolean;
+  npcId: string | null;
+  npcName: string;
+  currentText: string;
+  options: Array<{ text: string; response: string }>;
+};
+
+export type InventoryItem = {
+  itemId: string;
+  quantity: number;
+};
+
 type GameStore = {
   character: Character | null;
   mapId: string;
@@ -53,6 +66,8 @@ type GameStore = {
   fogData: boolean[][];
   playerPos: { x: number, y: number };
   combat: CombatState;
+  dialogue: DialogueState;
+  inventory: InventoryItem[];
   
   // Actions
   initGame: (char: Character) => void;
@@ -61,6 +76,9 @@ type GameStore = {
   attackEnemy: () => void;
   endTurn: () => void;
   addLog: (msg: string) => void;
+  openDialogue: (npcId: string) => void;
+  closeDialogue: () => void;
+  addInventoryItem: (itemId: string, quantity?: number) => void;
 };
 
 // Dispatch custom events for juice
@@ -91,6 +109,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
     movementLeft: 6,
     log: []
   },
+  dialogue: {
+    isOpen: false,
+    npcId: null,
+    npcName: "",
+    currentText: "",
+    options: []
+  },
+  inventory: [
+    { itemId: "healing_potion", quantity: 2 },
+    { itemId: "iron_sword", quantity: 1 }
+  ],
 
   initGame: (char) => {
     const rawMap = GameData.maps[char.mapId as keyof typeof GameData.maps]?.layout || GameData.maps.village.layout;
@@ -120,6 +149,49 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
   },
 
+  openDialogue: (npcId) => {
+    const npcData = GameData.npcDialogue[npcId as keyof typeof GameData.npcDialogue];
+    if (!npcData) return;
+    
+    set({
+      dialogue: {
+        isOpen: true,
+        npcId,
+        npcName: npcData.name,
+        currentText: npcData.greeting,
+        options: npcData.dialogueOptions
+      }
+    });
+  },
+
+  closeDialogue: () => {
+    set({
+      dialogue: {
+        isOpen: false,
+        npcId: null,
+        npcName: "",
+        currentText: "",
+        options: []
+      }
+    });
+  },
+
+  addInventoryItem: (itemId, quantity = 1) => {
+    set(state => {
+      const existing = state.inventory.find(i => i.itemId === itemId);
+      if (existing) {
+        return {
+          inventory: state.inventory.map(i => 
+            i.itemId === itemId ? { ...i, quantity: i.quantity + quantity } : i
+          )
+        };
+      }
+      return {
+        inventory: [...state.inventory, { itemId, quantity }]
+      };
+    });
+  },
+
   addLog: (msg) => {
     set(state => ({
       combat: { ...state.combat, log: [...state.combat.log, msg].slice(-5) }
@@ -137,11 +209,45 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const nx = state.playerPos.x + dx;
     const ny = state.playerPos.y + dy;
 
+    // Check for map transition (exit tiles marked with >)
+    const currentMap = GameData.maps[state.mapId as keyof typeof GameData.maps];
+    if (state.mapData[state.playerPos.y] && state.mapData[state.playerPos.y][state.playerPos.x] === '>') {
+      const exit = currentMap?.exits?.[0]; // Simplified: first exit
+      if (exit) {
+        const newMap = GameData.maps[exit.targetMapId as keyof typeof GameData.maps];
+        if (newMap) {
+          const grid = newMap.layout.map(row => row.split(''));
+          const fog = grid.map(row => row.map(() => true));
+          
+          // Reveal new area
+          for(let fdy = -3; fdy <= 3; fdy++) {
+            for(let fdx = -3; fdx <= 3; fdx++) {
+              if (exit.targetY + fdy >= 0 && exit.targetY + fdy < fog.length && 
+                  exit.targetX + fdx >= 0 && exit.targetX + fdx < fog[0].length) {
+                if (fdx*fdx + fdy*fdy <= 10) {
+                  fog[exit.targetY + fdy][exit.targetX + fdx] = false;
+                }
+              }
+            }
+          }
+
+          set({
+            mapId: exit.targetMapId,
+            playerPos: { x: exit.targetX, y: exit.targetY },
+            mapData: grid,
+            fogData: fog,
+            combat: { ...state.combat, isActive: false }
+          });
+          return;
+        }
+      }
+    }
+
     if (ny < 0 || ny >= state.mapData.length || nx < 0 || nx >= state.mapData[0].length) return;
     
     const targetTile = state.mapData[ny][nx];
 
-    if (targetTile === '#') return; // Wall
+    if (targetTile === '#' || targetTile === '>') return; // Wall or exit tile
 
     // Check for entities
     if (targetTile !== '.' && targetTile !== '@') {
@@ -155,7 +261,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
           }
           return; // Don't move into enemy tile
         } else {
+          // Non-hostile: open dialogue
           state.addLog(`You encounter: ${entity.name}`);
+          get().openDialogue(entity.id);
           return;
         }
       }

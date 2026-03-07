@@ -2,12 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useRoute } from 'wouter';
 import { useCharacter, useUpdateCharacter } from '@/hooks/use-characters';
 import { useGameStore } from '@/game/engine';
-import { GameData } from '@/game/data';
+import { GameData, ItemData } from '@/game/data';
 import { ParchmentPanel } from '@/components/ui/ParchmentPanel';
 import { Button } from '@/components/ui/Button';
 import { JuiceOverlay } from '@/components/game/JuiceOverlay';
+import { DialogueModal } from '@/components/game/DialogueModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Shield, Swords, PersonStanding, LogOut } from 'lucide-react';
+import { Heart, Shield, Swords, PersonStanding, LogOut, Backpack } from 'lucide-react';
 
 export default function Play() {
   const [, params] = useRoute('/play/:id');
@@ -18,6 +19,7 @@ export default function Play() {
   
   const game = useGameStore();
   const [isShaking, setIsShaking] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
 
   // Initialize game when character loads
   useEffect(() => {
@@ -69,6 +71,17 @@ export default function Play() {
 
   return (
     <div className={`h-screen flex flex-col md:flex-row bg-[#0a0a0c] overflow-hidden ${isShaking ? 'shake' : ''}`}>
+      <DialogueModal
+        isOpen={game.dialogue.isOpen}
+        npcName={game.dialogue.npcName}
+        currentText={game.dialogue.currentText}
+        options={game.dialogue.options}
+        onClose={() => game.closeDialogue()}
+        onSelectOption={(response) => {
+          // Update dialogue to show response
+          game.closeDialogue();
+        }}
+      />
       <JuiceOverlay />
       
       {/* Left Sidebar: Character Sheet */}
@@ -95,7 +108,7 @@ export default function Play() {
             </div>
           </div>
 
-          <div className="space-y-4 flex-1">
+          <div className="space-y-4 flex-1 overflow-y-auto">
              <h3 className="font-display text-accent border-b border-border/50 pb-1">Attributes</h3>
              <div className="grid grid-cols-3 gap-2 text-center text-sm">
                 <div className="bg-card p-2 rounded border border-border/30"><div className="text-muted-foreground text-xs uppercase">STR</div>{game.character.str}</div>
@@ -104,6 +117,37 @@ export default function Play() {
                 <div className="bg-card p-2 rounded border border-border/30"><div className="text-muted-foreground text-xs uppercase">INT</div>{game.character.int}</div>
                 <div className="bg-card p-2 rounded border border-border/30"><div className="text-muted-foreground text-xs uppercase">WIS</div>{game.character.wis}</div>
                 <div className="bg-card p-2 rounded border border-border/30"><div className="text-muted-foreground text-xs uppercase">CHA</div>{game.character.cha}</div>
+             </div>
+
+             <div className="pt-2">
+               <button
+                 onClick={() => setShowInventory(!showInventory)}
+                 className="flex items-center gap-2 w-full text-accent font-display border-b border-border/50 pb-1 hover:text-accent/80 transition-colors"
+               >
+                 <Backpack className="w-4 h-4" />
+                 Inventory ({game.inventory.length} items)
+               </button>
+               
+               {showInventory && (
+                 <div className="mt-2 space-y-1">
+                   {game.inventory.length === 0 ? (
+                     <p className="text-xs text-muted-foreground italic">Empty</p>
+                   ) : (
+                     game.inventory.map((item) => {
+                       const itemData = ItemData[item.itemId];
+                       return (
+                         <div key={item.itemId} className="flex justify-between items-center text-xs bg-card p-2 rounded border border-border/30">
+                           <div className="flex items-center gap-2">
+                             <span>{itemData?.sprite || '❓'}</span>
+                             <span className="text-muted-foreground">{itemData?.name || item.itemId}</span>
+                           </div>
+                           <span className="font-display text-accent">×{item.quantity}</span>
+                         </div>
+                       );
+                     })
+                   )}
+                 </div>
+               )}
              </div>
           </div>
 
@@ -124,7 +168,7 @@ export default function Play() {
       <main className="flex-1 relative flex flex-col items-center justify-center p-4">
         {/* Map Header */}
         <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 text-center pointer-events-none">
-          <h2 className="text-3xl font-display text-white drop-shadow-md">{GameData.maps[game.mapId as keyof typeof GameData.maps]?.name}</h2>
+          <h2 className="text-3xl font-display text-white drop-shadow-md">{GameData.maps[game.mapId as keyof typeof GameData.maps]?.name || game.mapId}</h2>
         </div>
 
         {/* The Grid Canvas alternative (using CSS Grid for simplicity & styling control) */}
