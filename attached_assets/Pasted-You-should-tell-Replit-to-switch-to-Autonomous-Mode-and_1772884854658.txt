@@ -1,0 +1,78 @@
+You should **tell Replit to switch to Autonomous Mode and continue building properly.** Fast Mode will almost certainly **break your project** if it tries to cram 6+ systems into 3 turns.
+
+Here’s the **best response you can paste to Replit**:
+
+```
+Switch to Autonomous Mode and continue the project.
+
+Use the data architecture that has already been created as the foundation for the game engine.
+
+Before implementing new systems, review all current files to understand how the existing game loop, UI, and state management work.
+
+Then proceed with the remaining development in phases:
+
+Phase 2 – World & Map System
+- Implement region-based maps with transitions between regions
+- Integrate the new regions already defined in the data files
+- Ensure the player can travel between regions smoothly
+
+Phase 3 – Dialogue System
+- Build a dialogue engine that supports branching dialogue trees
+- Allow NPCs to offer quests through dialogue
+- Support player dialogue choices and conditional responses
+
+Phase 4 – Quest System
+- Implement quest tracking
+- Add objectives, progress tracking, and rewards
+- Integrate quests with NPC dialogue
+
+Phase 5 – Inventory & Items
+- Implement inventory management
+- Add equipment slots
+- Add consumable items and loot
+
+Phase 6 – Combat & Abilities
+- Implement class abilities (Action Surge, Spell Slots, Sneak Attack, etc.)
+- Add enemy encounters and loot drops
+
+Phase 7 – Persistence
+- Implement save/load using localStorage
+- Persist player progress, quests, inventory, and world state
+
+Important requirements:
+- Do not break the existing game loop or UI
+- Keep systems modular and scalable
+- Integrate with the existing data definitions
+- Test functionality after each phase before moving on
+- Comment code clearly
+
+Goal:
+Transform the project into a stable RPG engine capable of supporting 50+ NPCs, multiple regions, and large quest chains.
+```
+
+✅ This does three important things:
+
+1. **Confirms Autonomous Mode**
+2. **Prevents the AI from rushing**
+3. **Forces phased development**
+
+---
+
+💡 **One more tip:**
+If Replit still hesitates, add this line at the top:
+
+```
+This is a long-running autonomous development task. Plan the architecture before writing code.
+```
+
+---
+
+If you want, I can also give you a **much stronger “Replit Master Prompt”** that will push it to add:
+
+* **procedural NPC dialogue**
+* **random encounters**
+* **dynamic world events**
+* **procedural quests**
+* **100+ lore entries**
+
+which would make **Aetheria feel like a real RPG world.**
