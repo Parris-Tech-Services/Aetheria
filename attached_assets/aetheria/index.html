@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Aetheria: The Whispering Woods</title>
+    <link rel='stylesheet' href='style.css'>
+</head>
+<body>
+    <div id='game-container'>
+        <!-- Sidebar for Stats & Inventory -->
+        <aside id='sidebar'>
+            <div class='panel profile'>
+                <h3>Character</h3>
+                <p><strong>Class:</strong> <span id='p-class'>Fighter</span></p>
+                <div class='hp-container'>
+                    HP: <span id='p-hp'>30</span>/<span id='p-maxhp'>30</span>
+                    <div class='hp-bar'><div id='p-hp-fill' class='hp-fill'></div></div>
+                </div>
+                <p>AC: <span id='p-ac'>16</span> | GP: <span id='p-gold'>10</span></p>
+            </div>
+            <div class='panel' id='journal'>
+                <h3>Journal</h3>
+                <ul id='quest-list'><li>No active quests.</li></ul>
+            </div>
+        </aside>
+
+        <!-- Main Gameplay Area -->
+        <main id='main-view'>
+            <div id='map-container'>
+                <div id='map-header'>
+                    <h2 id='location-name'>Village Edge</h2>
+                </div>
+                <div id='grid'></div>
+            </div>
+
+            <div id='interaction-ui' class='hidden'>
+                <h2 id='ui-title'>Encounter</h2>
+                <div id='log-window'></div>
+                <div id='action-bar' class='controls'></div>
+                <div id='action-economy' class='hidden'>
+                    <span id='indicator-action' class='token'>Action</span>
+                    <span id='indicator-bonus' class='token'>Bonus Action</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src='data.js'></script>
+    <script src='engine.js'></script>
+    <script src='ui.js'></script>
+</body>
+</html>

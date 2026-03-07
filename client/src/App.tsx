@@ -5,12 +5,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 
+import Home from "./pages/Home";
+import CreateCharacter from "./pages/CreateCharacter";
+import Play from "./pages/Play";
+
 function Router() {
   return (
     <Switch>
-      {/* Add pages below */}
-      {/* <Route path="/" component={Home}/> */}
-      {/* Fallback to 404 */}
+      <Route path="/" component={Home} />
+      <Route path="/create" component={CreateCharacter} />
+      <Route path="/play/:id" component={Play} />
       <Route component={NotFound} />
     </Switch>
   );
