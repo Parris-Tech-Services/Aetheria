@@ -1,0 +1,52 @@
+To get the most out of Replit (especially if you are using Replit Agent), you need a prompt that defines the architecture, the "juice," and the mathematical soul of D&D 5e.
+
+Copy and paste the prompt below. It is designed to force the AI to move beyond a simple script and build a scalable, professional-grade game engine.
+
+The "AAA Indie" RPG Prompt for Replit
+System Goal: Transform the provided HTML/JS D&D game into a high-fidelity, modular "AAA-style" browser RPG. Use modern ES6 modules and a data-driven architecture.
+
+1. Visuals & "Juice" (The AAA Feel):
+
+Particle System: Implement a lightweight HTML5 Canvas overlay for particle effects (blood splatters on hits, golden sparkles for healing, "level up" rays).
+
+Dynamic Lighting: Use CSS radial gradients and "Fog of War" to hide tiles the player hasn't visited yet.
+
+Screen Shake & Tweening: Implement a "Juice Manager" that handles screen shakes, floating damage numbers (red for damage, green for healing), and smooth character movement transitions using RequestAnimationFrame.
+
+UI Framework: Refactor the UI using a "parchment and iron" aesthetic. Include a collapsible Sidebar for a full Character Sheet, an Inventory Grid, and a Quest Journal.
+
+2. Deep 5e Mechanics:
+
+The Big Three Classes: Allow the player to choose between Fighter (Action Surge/Second Wind), Wizard (Spell Slots/Cantrips), and Rogue (Sneak Attack/Cunning Action).
+
+Action Economy: Strictly enforce "Action," "Bonus Action," and "Reaction." Use a visual UI indicator for spent/available actions.
+
+Advanced Combat: Implement Advantage/Disadvantage logic, Critical Hits (Nat 20s), and Status Conditions (Poisoned, Prone, Inspired).
+
+3. World & Narrative Engine:
+
+Map Loader: Create a system to load maps from JSON files. Include transitions between "Village," "Dungeon," and "Overworld."
+
+Quest System: Build a state-tracked quest manager (Active/Completed/Failed) that changes NPC dialogue based on quest flags.
+
+Audio Engine: Integrate a Web Audio API controller for: 1) Ambient loops (forest sounds), 2) Combat music (swaps on encounter), and 3) SFX (sword clinks, spell "whooshes").
+
+4. Inventory & Meta-Progression:
+
+Loot Tables: Create a randomized loot system (Common, Rare, Legendary) where items modify the player's AC, Damage, or Skill Mods.
+
+XP & Leveling: Implement a level-up screen where players can choose a +1 to a stat or a new class feature at Level 3.
+
+Persistence: Use localStorage to ensure the game saves automatically after every encounter.
+
+Technical Requirement: Separate the code into modular files: game.js (State), combat.js (Logic), render.js (UI/Juice), and data.js (Maps/Items/Monsters).
+
+Why this prompt works:
+Modular Instructions: It tells Replit to stop putting everything in one file, which prevents the code from becoming a buggy "spaghetti" mess as it grows.
+
+Juice First: By asking for "Particle Systems" and "Floating Numbers," you ensure the game feels satisfying to play, rather than just reading a log.
+
+Action Economy: This is the heart of 5e. Forcing the AI to track "Bonus Actions" makes the game tactical rather than just "click until enemy dies."
+
+💡 Pro-Tip for Replit
+If Replit stops halfway through because the game is getting too big, just type: "Continue from where you left off, specifically focusing on the [System Name] we discussed."
