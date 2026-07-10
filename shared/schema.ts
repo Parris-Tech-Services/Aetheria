@@ -12,6 +12,7 @@ export const characters = pgTable("characters", {
   ac: integer("ac").default(10).notNull(),
   gold: integer("gold").default(0).notNull(),
   xp: integer("xp").default(0).notNull(),
+  xpToNextLevel: integer("xp_to_next_level").default(100).notNull(),
   
   // Stats
   str: integer("str").default(10).notNull(),
