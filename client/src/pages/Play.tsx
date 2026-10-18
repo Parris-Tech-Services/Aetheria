@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useRoute } from 'wouter';
+import { Link, useRoute } from 'wouter';
 import { useCharacter, useUpdateCharacter } from '@/hooks/use-characters';
 import { useGameStore } from '@/game/engine';
 import { GameData, ItemData } from '@/game/data';
 import { ParchmentPanel } from '@/components/ui/ParchmentPanel';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { JuiceOverlay } from '@/components/game/JuiceOverlay';
 import { DialogueModal } from '@/components/game/DialogueModal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -92,9 +92,9 @@ export default function Play() {
               <h2 className="text-2xl font-display text-accent">{game.character.name}</h2>
               <p className="text-sm text-muted-foreground uppercase tracking-widest">Level {game.character.level} {game.character.characterClass}</p>
             </div>
-            <a href="/" className="text-muted-foreground hover:text-white transition-colors">
+            <Link href="/" aria-label="Back to characters" className="text-muted-foreground hover:text-white transition-colors">
               <LogOut className="w-5 h-5" />
-            </a>
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-8">

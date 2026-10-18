@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { ParchmentPanel } from '@/components/ui/ParchmentPanel';
 import { useCreateCharacter } from '@/hooks/use-characters';
 import { ClassData } from '@/game/data';
