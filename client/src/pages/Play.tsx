@@ -4,7 +4,7 @@ import { useCharacter, useUpdateCharacter } from '@/hooks/use-characters';
 import { useGameStore } from '@/game/engine';
 import { GameData, ItemData } from '@/game/data';
 import { ParchmentPanel } from '@/components/ui/ParchmentPanel';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { JuiceOverlay } from '@/components/game/JuiceOverlay';
 import { DialogueModal } from '@/components/game/DialogueModal';
 import { motion, AnimatePresence } from 'framer-motion';

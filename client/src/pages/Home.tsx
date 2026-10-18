@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'wouter';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { useCharacters, useDeleteCharacter } from '@/hooks/use-characters';
 import { ParchmentPanel } from '@/components/ui/ParchmentPanel';
 import { Trash2, Play } from 'lucide-react';
