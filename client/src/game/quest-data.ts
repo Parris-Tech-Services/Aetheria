@@ -1,174 +1,55 @@
 import { Quest } from "./types";
 
+// Four quests, all reachable in the live world. Threads that need NPCs or enemies the game does not contain
+// (a refugee, an oracle, a goblin raider) are parked in docs/ORIGINALITY-PROGRAM.md, not left half-wired here.
 export const QuestData: Record<string, Quest> = {
-  elara_herbs: {
-    id: "elara_herbs",
-    title: "Elara's Rare Herbs",
-    description: "Gather 3 moonbloom flowers for Elara the herbalist.",
+  moonbloom_for_jila: {
+    id: "moonbloom_for_jila",
+    title: "Moonbloom for Jila",
+    description: "Jila Mossbind needs three moonbloom for a cough syrup. They grow where the soil has soured: one in the woods east of the village, two out in the Ashfields.",
     status: "inactive",
     objectives: [
-      {
-        id: "obj_1",
-        description: "Collect 3 moonbloom flowers",
-        type: "collect",
-        targetId: "moonbloom_flower",
-        count: 3,
-        currentCount: 0,
-        completed: false,
-      },
+      { id: "obj_bloom", description: "Collect 3 moonbloom flowers", type: "collect", targetId: "moonbloom_flower", count: 3, currentCount: 0, completed: false },
     ],
-    reward: {
-      xp: 100,
-      gold: 50,
-      item: "lesser_healing_potion",
-    },
-    giver: "elara_mossbind",
+    reward: { xp: 100, gold: 50, item: "lesser_healing_potion" },
+    giver: "jila_mossbind",
   },
 
   clear_barrow: {
     id: "clear_barrow",
-    title: "Clear the Rotted Barrow",
-    description: "Defeat the undead in the Rotted Barrow crypt.",
+    title: "Quiet the Barrow",
+    description: "Captain Haddow will not send another guard into the Rotted Barrow. Put three of the dead back down, and touch the altar at the crypt's heart.",
     status: "inactive",
     objectives: [
-      {
-        id: "obj_2",
-        description: "Defeat 3 undead enemies",
-        type: "kill",
-        targetId: "undead",
-        count: 3,
-        currentCount: 0,
-        completed: false,
-      },
-      {
-        id: "obj_3",
-        description: "Reach the altar at the crypt's heart",
-        type: "reach",
-        targetId: "crypt_altar",
-        count: 1,
-        currentCount: 0,
-        completed: false,
-      },
+      { id: "obj_dead", description: "Put down 3 of the dead", type: "kill", targetId: "undead", count: 3, currentCount: 0, completed: false },
+      { id: "obj_altar", description: "Touch the altar at the crypt's heart", type: "reach", targetId: "crypt_altar", count: 1, currentCount: 0, completed: false },
     ],
-    reward: {
-      xp: 200,
-      gold: 75,
-      item: "iron_shield",
-    },
-    giver: "theron_captain",
+    reward: { xp: 200, gold: 75, item: "iron_shield" },
+    giver: "captain_haddow",
   },
 
   fenwick_hammer: {
     id: "fenwick_hammer",
-    title: "Old Fenwick's Hammer",
-    description: "Retrieve the goblin-stolen hammer from the Rotted Barrow.",
+    title: "The Master's Hammerhead",
+    description: "Something from the barrow carried off the head of Fenwick's master's hammer and left the haft. Find the head among the graves.",
     status: "inactive",
     objectives: [
-      {
-        id: "obj_4",
-        description: "Defeat the goblin raider",
-        type: "kill",
-        targetId: "goblin_raider",
-        count: 1,
-        currentCount: 0,
-        completed: false,
-      },
-      {
-        id: "obj_5",
-        description: "Return the hammer to Fenwick",
-        type: "talk",
-        targetId: "fenwick_blacksmith",
-        count: 1,
-        currentCount: 0,
-        completed: false,
-      },
+      { id: "obj_head", description: "Collect Fenwick's hammerhead", type: "collect", targetId: "fenwick_hammerhead", count: 1, currentCount: 0, completed: false },
     ],
-    reward: {
-      xp: 150,
-      gold: 100,
-      item: "fenwick_hammer",
-    },
+    reward: { xp: 150, gold: 100, item: "fenwick_hammer" },
     giver: "fenwick_blacksmith",
-  },
-
-  find_riven_family: {
-    id: "find_riven_family",
-    title: "Find Riven's Family",
-    description: "Help Riven find clues about their lost family in the Ashfields.",
-    status: "inactive",
-    objectives: [
-      {
-        id: "obj_6",
-        description: "Talk to NPCs who have clues",
-        type: "talk",
-        targetId: "various_npcs",
-        count: 3,
-        currentCount: 0,
-        completed: false,
-      },
-      {
-        id: "obj_7",
-        description: "Return to Riven with news",
-        type: "reach",
-        targetId: "riven_location",
-        count: 1,
-        currentCount: 0,
-        completed: false,
-      },
-    ],
-    reward: {
-      xp: 175,
-      gold: 100,
-      item: "riven_family_locket",
-    },
-    giver: "riven_refugee",
-  },
-
-  oracle_test: {
-    id: "oracle_test",
-    title: "The Oracle's Test",
-    description: "Answer 3 riddles from the Ashen Oracle.",
-    status: "inactive",
-    objectives: [
-      {
-        id: "obj_8",
-        description: "Answer 3 riddles correctly",
-        type: "talk",
-        targetId: "ashen_oracle",
-        count: 3,
-        currentCount: 0,
-        completed: false,
-      },
-    ],
-    reward: {
-      xp: 300,
-      gold: 150,
-      item: "barrow_seal",
-    },
-    giver: "ashen_oracle",
   },
 
   final_confrontation: {
     id: "final_confrontation",
-    title: "The Final Confrontation",
-    description: "Face the Hollow King in his throne chamber.",
+    title: "Whatever Waits Behind the Door",
+    description: "The seal on the barrow's north door has let go. Brother Resad will not say what is behind it.",
     status: "inactive",
     objectives: [
-      {
-        id: "obj_9",
-        description: "Defeat the Hollow King",
-        type: "kill",
-        targetId: "hollow_king",
-        count: 1,
-        currentCount: 0,
-        completed: false,
-      },
+      { id: "obj_king", description: "Face the Hollow King", type: "kill", targetId: "hollow_king", count: 1, currentCount: 0, completed: false },
     ],
-    reward: {
-      xp: 500,
-      gold: 500,
-      item: "crown_of_dominion",
-    },
-    giver: "auto_triggered",
+    reward: { xp: 500, gold: 500, item: "crown_of_dominion" },
+    giver: "resad_priest",
+    turnIn: "auto",
   },
 };

@@ -3,12 +3,15 @@ import { useRoute } from 'wouter';
 import { useCharacter, useUpdateCharacter } from '@/hooks/use-characters';
 import { useGameStore } from '@/game/engine';
 import { GameData, ItemData } from '@/game/data';
+import { QuestData } from '@/game/quest-data';
+import { LoreData } from '@/game/lore-data';
+import { questState } from '@/game/world';
 import { ParchmentPanel } from '@/components/ui/ParchmentPanel';
 import { Button } from '@/components/ui/button';
 import { JuiceOverlay } from '@/components/game/JuiceOverlay';
 import { DialogueModal } from '@/components/game/DialogueModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Shield, Swords, PersonStanding, LogOut, Backpack } from 'lucide-react';
+import { Heart, Shield, Swords, PersonStanding, LogOut, Backpack, ScrollText } from 'lucide-react';
 
 export default function Play() {
   const [, params] = useRoute('/play/:id');
@@ -20,6 +23,7 @@ export default function Play() {
   const game = useGameStore();
   const [isShaking, setIsShaking] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
+  const [showJournal, setShowJournal] = useState(true);
 
   // Initialize game when character loads
   useEffect(() => {
@@ -58,10 +62,11 @@ export default function Play() {
   // Auto-save logic (debounced implicitly by combat state changes or distinct moves, but keep simple here)
   useEffect(() => {
     // Only save if HP changed or combat ended
-    if (game.character && character && game.character.hp !== character.hp) {
-       updateMutation.mutate({ id: character.id, hp: game.character.hp });
+    const c = game.character;
+    if (c && character && (c.hp !== character.hp || c.xp !== character.xp || c.gold !== character.gold || c.level !== character.level)) {
+       updateMutation.mutate({ id: character.id, hp: c.hp, maxHp: c.maxHp, xp: c.xp, gold: c.gold, level: c.level, xpToNextLevel: c.xpToNextLevel });
     }
-  }, [game.character?.hp]);
+  }, [game.character?.hp, game.character?.xp, game.character?.gold, game.character?.level]);
 
   if (isLoading || !game.character) {
     return <div className="h-screen flex items-center justify-center text-accent font-display text-2xl">Summoning Reality...</div>;
@@ -77,10 +82,7 @@ export default function Play() {
         currentText={game.dialogue.currentText}
         options={game.dialogue.options}
         onClose={() => game.closeDialogue()}
-        onSelectOption={(response) => {
-          // Update dialogue to show response
-          game.closeDialogue();
-        }}
+        onSelectOption={(optionId) => game.selectDialogueOption(optionId)}
       />
       <JuiceOverlay />
       
@@ -97,6 +99,7 @@ export default function Play() {
             </a>
           </div>
 
+          <p data-testid="xp-gold" className="text-xs text-muted-foreground mb-3">XP {game.character.xp} / {game.character.xpToNextLevel} · {game.character.gold} gold</p>
           <div className="grid grid-cols-2 gap-4 mb-8">
             <div className="bg-card p-3 rounded border border-border/50 flex flex-col items-center">
               <Heart className="w-5 h-5 text-destructive mb-1" />
@@ -117,6 +120,45 @@ export default function Play() {
                 <div className="bg-card p-2 rounded border border-border/30"><div className="text-muted-foreground text-xs uppercase">INT</div>{game.character.int}</div>
                 <div className="bg-card p-2 rounded border border-border/30"><div className="text-muted-foreground text-xs uppercase">WIS</div>{game.character.wis}</div>
                 <div className="bg-card p-2 rounded border border-border/30"><div className="text-muted-foreground text-xs uppercase">CHA</div>{game.character.cha}</div>
+             </div>
+
+
+             <div className="pt-2">
+               <button
+                 onClick={() => setShowJournal(!showJournal)}
+                 data-testid="journal-toggle"
+                 className="flex items-center gap-2 w-full text-accent font-display border-b border-border/50 pb-1 hover:text-accent/80 transition-colors"
+               >
+                 <ScrollText className="w-4 h-4" />
+                 Journal
+               </button>
+               {showJournal && (
+                 <div data-testid="journal" className="mt-2 space-y-2 text-xs">
+                   {Object.entries(game.world.quests).length === 0 && game.world.lore.length === 0 && (
+                     <p className="text-muted-foreground italic">Nothing yet. Talk to people.</p>
+                   )}
+                   {Object.entries(game.world.quests).map(([id, p]) => {
+                     const q = QuestData[id];
+                     if (!q) return null;
+                     const state = questState(game.world, id);
+                     return (
+                       <div key={id} className="bg-card p-2 rounded border border-border/30">
+                         <div className="font-display text-accent">{q.title} <span className="text-muted-foreground">({state === 'ready' ? 'report back' : state})</span></div>
+                         {state !== 'completed' && q.objectives.map((o) => {
+                           const have = o.type === 'collect' ? (game.world.inventory.find((i) => i.itemId === o.targetId)?.quantity ?? 0) : (p.counts[o.id] ?? 0);
+                           return <div key={o.id} className="text-muted-foreground">{o.description}: {Math.min(have, o.count)}/{o.count}</div>;
+                         })}
+                       </div>
+                     );
+                   })}
+                   {game.world.lore.map((id) => LoreData[id] && (
+                     <div key={id} className="bg-card p-2 rounded border border-border/30">
+                       <div className="font-display text-accent">{LoreData[id].title}</div>
+                       <div className="text-muted-foreground">{LoreData[id].text}</div>
+                     </div>
+                   ))}
+                 </div>
+               )}
              </div>
 
              <div className="pt-2">
@@ -155,7 +197,7 @@ export default function Play() {
           <div className="h-48 mt-4 bg-[#050505] rounded border border-border p-3 overflow-y-auto font-mono text-sm space-y-1">
              <div className="text-accent text-xs uppercase mb-2 sticky top-0 bg-[#050505]">Chronicle</div>
              {combat.log.map((entry, i) => (
-               <div key={i} className={entry.includes('damage') ? 'text-destructive' : 'text-muted-foreground'}>
+               <div key={i} data-testid="log-line" className={entry.includes('damage') ? 'text-destructive' : 'text-muted-foreground'}>
                  {'>'} {entry}
                </div>
              ))}

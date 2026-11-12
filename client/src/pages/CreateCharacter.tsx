@@ -61,7 +61,7 @@ export default function CreateCharacter() {
                 type="text" 
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="e.g. Alaric the Brave"
+                placeholder="e.g. Wynn of the Hollow Road"
                 className="w-full bg-background border border-border p-3 text-foreground font-display text-lg focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all rounded-sm shadow-inner"
                 required
                 maxLength={30}

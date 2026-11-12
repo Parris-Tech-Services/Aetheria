@@ -8,9 +8,9 @@ interface DialogueModalProps {
   isOpen: boolean;
   npcName: string;
   currentText: string;
-  options: Array<{ text: string; response: string }>;
+  options: Array<{ id: string; label: string }>;
   onClose: () => void;
-  onSelectOption: (response: string) => void;
+  onSelectOption: (optionId: string) => void;
 }
 
 export function DialogueModal({
@@ -43,19 +43,20 @@ export function DialogueModal({
                   </button>
                 </div>
 
-                <p className="text-sm text-foreground leading-relaxed italic">{currentText}</p>
+                <p data-testid="dialogue-text" className="text-sm text-foreground leading-relaxed italic">{currentText}</p>
 
                 <div className="space-y-2 pt-2">
-                  {options.map((option, idx) => (
+                  {options.map((option) => (
                     <Button
-                      key={idx}
+                      key={option.id}
+                      data-testid={`dialogue-option-${option.id}`}
                       variant="outline"
                       className="w-full justify-start text-left h-auto py-2 px-3"
                       onClick={() => {
-                        onSelectOption(option.response);
+                        onSelectOption(option.id);
                       }}
                     >
-                      {option.text}
+                      {option.label}
                     </Button>
                   ))}
                 </div>
