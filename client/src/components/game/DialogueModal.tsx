@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { ParchmentPanel } from '@/components/ui/ParchmentPanel';
 import { X } from 'lucide-react';
 
