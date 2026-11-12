@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Character } from "@shared/schema";
 import { api, buildUrl, type CharacterInput, type CharacterUpdateInput } from "@shared/routes";
 
 // Log zod errors for debugging
@@ -18,7 +19,7 @@ export function useCharacters() {
       const res = await fetch(api.characters.list.path, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch characters");
       const data = await res.json();
-      return parseWithLogging(api.characters.list.responses[200], data, "characters.list");
+      return parseWithLogging<Character[]>(api.characters.list.responses[200], data, "characters.list");
     },
   });
 }
@@ -33,7 +34,7 @@ export function useCharacter(id: number | null) {
       if (res.status === 404) return null;
       if (!res.ok) throw new Error("Failed to fetch character");
       const data = await res.json();
-      return parseWithLogging(api.characters.get.responses[200], data, "characters.get");
+      return parseWithLogging<Character | null>(api.characters.get.responses[200], data, "characters.get");
     },
     enabled: id !== null,
   });

@@ -24,28 +24,55 @@ export interface MapData {
 }
 
 // NPCs and Dialogue
+
+// A condition is true when EVERY listed field holds. Unknown state never passes.
+export interface Condition {
+  flag?: string;                 // flag is set (truthy)
+  notFlag?: string;              // flag is not set
+  item?: string;                 // player carries this item
+  questStatus?: { id: string; status: QuestStatus | "ready" }; // "ready" = all objectives done, not yet turned in
+  minRep?: number;               // reputation at or above
+  maxRep?: number;               // reputation at or below
+  stat?: string;                 // character stat name (str, dex, ...)
+  minValue?: number;             // with stat
+}
+
+export interface Effect {
+  giveQuest?: string;
+  completeQuest?: string;        // only works when the quest is "ready"
+  giveItem?: string;
+  takeItem?: string;
+  setFlag?: string;
+  adjustRep?: number;
+  discoverLore?: string;
+  giveGold?: number;
+}
+
 export interface DialogueOption {
   id: string;
   label: string;
   nextNodeId: string | null;
-  requires?: {
-    questFlag?: string;
-    item?: string;
-    stat?: string;
-    minValue?: number;
-  };
-  effect?: {
-    giveQuest?: string;
-    giveItem?: string;
-    setFlag?: string;
-    adjustRep?: number;
-  };
+  requires?: Condition;
+  effect?: Effect;
 }
 
 export interface DialogueNode {
   id: string;
-  text: string;
+  text: string;                  // may contain {gold:quest_id} {xp:quest_id} {item:quest_id} tokens
   options: DialogueOption[];
+  onEnter?: Effect;              // applied once when the node is shown
+}
+
+// What an NPC wants, will not do and knows. Not shown to the player; checked by the content tests.
+export interface NpcProfile {
+  want: string;                  // a want that is not "save the world"
+  limit: string;                 // what they cannot or will not do
+  publicKnowledge: string[];
+  privateKnowledge: string[];    // only revealed when earned
+  unknown: string[];             // things they honestly do not know
+  taboo: string;                 // what they will not discuss
+  noticesFirst: string;          // what they notice about the player first
+  toneShift: string;             // what changes their tone
 }
 
 export interface NPC {
@@ -56,8 +83,9 @@ export interface NPC {
   x: number;
   y: number;
   role: "merchant" | "quest_giver" | "lore" | "companion" | "enemy_ally";
-  greeting: string;
-  repeatGreeting: string;
+  profile: NpcProfile;
+  // First entry whose condition holds is where a conversation starts. The last entry should have no condition.
+  startNodes: Array<{ nodeId: string; when?: Condition }>;
   dialogueTree: DialogueNode[];
   inventory?: string[]; // Item IDs they sell
 }
@@ -85,6 +113,7 @@ export interface Quest {
     item?: string;
   };
   giver: string; // NPC id
+  turnIn?: string; // NPC id to report to (defaults to giver)
 }
 
 // Items

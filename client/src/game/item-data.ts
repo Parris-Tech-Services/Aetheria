@@ -212,7 +212,7 @@ export const ItemData: Record<string, Item> = {
     sprite: "🌙",
     type: "quest",
     rarity: "uncommon",
-    description: "A rare flower that blooms only in cursed soil. Sought by Elara.",
+    description: "A rare flower that blooms only in cursed soil. Jila Mossbind wants three.",
   },
 
   riven_family_locket: {
@@ -240,6 +240,15 @@ export const ItemData: Record<string, Item> = {
     type: "quest",
     rarity: "legendary",
     description: "The crown of the Hollow King. Proof of victory.",
+  },
+
+  fenwick_hammerhead: {
+    id: "fenwick_hammerhead",
+    name: "Fenwick's Hammerhead",
+    sprite: "🔨",
+    type: "quest",
+    rarity: "rare",
+    description: "Pitted iron with a hollow circle stamped on one face. Fenwick will know it by weight.",
   },
 
   // LORE ITEMS
