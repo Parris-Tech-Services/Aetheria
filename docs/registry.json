@@ -1,0 +1,13 @@
+{
+  "people": {
+    "jila_mossbind": "Jila Mossbind, herbalist (display name replaced an LLM-default)",
+    "captain_haddow": "Captain Remith Haddow, village guard captain (replaced an LLM-default)",
+    "katon_wanderer": "Katon the Wanderer, guide (replaced an LLM-default)",
+    "fenwick_blacksmith": "Old Fenwick, smith (canon, kept)",
+    "dunna_barkeep": "Barkeep Dunna, the Tipped Flagon (canon, kept)",
+    "resad_priest": "Brother Resad, hedge-priest at the barrow (replaced an LLM-default)"
+  },
+  "mentioned_only": { "pell": "a guard who went into the barrow alone and did not come back", "hobb_skerry": "Fenwick's master" },
+  "places": ["Whispering Woods Edge", "The Tipped Flagon", "The Rotted Barrow", "The Ashfields", "The Hollow King's chamber"],
+  "rule": "new names are added here when approved; one family, one surname"
+}

@@ -1,5 +1,8 @@
+import type { Condition } from "./types";
+export { ItemData } from "./item-data";
+
 export type EntityData = {
-  id: string;
+  id: string;            // for NPCs this is the NPC id in npc-data.ts
   name: string;
   sprite: string;
   maxHp: number;
@@ -7,13 +10,19 @@ export type EntityData = {
   attackMod: number;
   damageDie: number;
   isHostile: boolean;
+  xp?: number;           // awarded on defeat
+  tags?: string[];       // e.g. "undead", matched by quest objectives
+  openingLine?: string;  // shown when combat starts
+  defeatLine?: string;   // shown on defeat
 };
 
 export type MapExit = {
-  direction: "N" | "S" | "E" | "W";
+  x: number; y: number;  // the ">" tile on this map
   targetMapId: string;
-  targetX: number;
-  targetY: number;
+  targetX: number; targetY: number;
+  label: string;
+  requires?: Condition;  // the exit is blocked until this holds
+  blockedMessage?: string;
 };
 
 export type MapInfo = {
@@ -22,69 +31,76 @@ export type MapInfo = {
   exits: MapExit[];
 };
 
+// Tile legend: # wall, . floor, > exit, T chest, m moonbloom, h hammerhead, j journal, = altar,
+// letters for NPCs and enemies are looked up in GameData.entities.
 export const GameData = {
   maps: {
     village: {
       name: "Whispering Woods Edge",
       layout: [
         "####################",
-        "#..................#",
-        "#.E...T.......S....#",
+        "#................m.#",
+        "#..H...C...........#",
         "#......###.........#",
-        "#......###.........#",
-        "#......###......S..#",
-        "#..................#",
-        "#........W.........#",
-        "#..................#",
-        "####################"
+        "#......###....F....#",
+        ">......###.........>",
+        "#..............S...#",
+        "#.......M..........#",
+        "#..T..........W....#",
+        "#########>##########"
       ],
       exits: [
-        { direction: "E", targetMapId: "dungeon", targetX: 2, targetY: 5 }
+        { x: 0, y: 5, targetMapId: "overworld", targetX: 17, targetY: 5, label: "the road west to the Ashfields" },
+        { x: 19, y: 5, targetMapId: "dungeon", targetX: 1, targetY: 5, label: "the path to the Rotted Barrow" },
+        { x: 9, y: 9, targetMapId: "tavern", targetX: 9, targetY: 1, label: "the door of the Tipped Flagon" }
       ]
     },
     dungeon: {
       name: "The Rotted Barrow",
       layout: [
-        "####################",
+        "#########>##########",
         "#..................#",
-        "#.Z..Z..........Z..#",
-        "#................Z.#",
-        "#......ZZZZ.......##",
-        ">.................##",
-        "#Z................##",
+        "#..Z.........Z.....#",
+        "#...............=..#",
+        "#.A.........ZZZZ...#",
+        ">..................#",
+        "#Z.........h.......#",
         "#..................#",
-        "#..................#",
+        "#....j..Z..........#",
         "####################"
       ],
       exits: [
-        { direction: "W", targetMapId: "village", targetX: 18, targetY: 5 }
+        { x: 0, y: 5, targetMapId: "village", targetX: 18, targetY: 5, label: "back to the village" },
+        { x: 9, y: 0, targetMapId: "boss_chamber", targetX: 9, targetY: 8, label: "the sealed north door",
+          requires: { flag: "altar_touched" },
+          blockedMessage: "The north door will not move. Something at the crypt's heart is holding it shut." }
       ]
     },
     overworld: {
       name: "The Ashfields",
       layout: [
         "####################",
+        "#..m...............#",
+        "#.........W........#",
         "#..................#",
-        "#.E..........E.....#",
+        "#.......W......m...#",
+        "#.................>#",
         "#..................#",
-        "#.........E.......##",
-        "#..................##",
-        "#..................##",
-        "#..................#",
+        "#...........S......#",
         "#..................#",
         "####################"
       ],
       exits: [
-        { direction: "W", targetMapId: "village", targetX: 2, targetY: 5 }
+        { x: 18, y: 5, targetMapId: "village", targetX: 1, targetY: 5, label: "back toward the village" }
       ]
     },
     tavern: {
       name: "The Tipped Flagon",
       layout: [
-        "####################",
+        "#########>##########",
         "#..................#",
-        "#....T....B.......#",
         "#..................#",
+        "#....T....B........#",
         "#..................#",
         "#..................#",
         "#..................#",
@@ -93,92 +109,69 @@ export const GameData = {
         "####################"
       ],
       exits: [
-        { direction: "N", targetMapId: "village", targetX: 10, targetY: 8 }
+        { x: 9, y: 0, targetMapId: "village", targetX: 9, targetY: 8, label: "back out to the lane" }
       ]
     },
     boss_chamber: {
-      name: "Throne of the Hollow King",
+      name: "The Throne Beneath the Barrow",
       layout: [
         "####################",
         "#..................#",
         "#..................#",
-        "#.........K.......#",
+        "#........K.........#",
         "#..................#",
         "#..................#",
         "#..................#",
         "#..................#",
         "#..................#",
-        "####################"
+        "#########>##########"
       ],
       exits: [
-        { direction: "S", targetMapId: "dungeon", targetX: 10, targetY: 2 }
+        { x: 9, y: 9, targetMapId: "dungeon", targetX: 9, targetY: 1, label: "back up into the barrow" }
       ]
     }
   } as Record<string, MapInfo>,
-  
+
   entities: {
-    'G': { id: "guard_1", name: "Village Guard", sprite: "💂", maxHp: 20, ac: 16, attackMod: 4, damageDie: 8, isHostile: false },
-    'S': { id: "slime_1", name: "Corrosive Slime", sprite: "🟢", maxHp: 15, ac: 10, attackMod: 3, damageDie: 6, isHostile: true },
-    'T': { id: "chest_1", name: "Old Chest", sprite: "🎁", maxHp: 1, ac: 5, attackMod: 0, damageDie: 1, isHostile: false },
-    'W': { id: "wolf_1", name: "Dire Wolf", sprite: "🐺", maxHp: 25, ac: 14, attackMod: 5, damageDie: 8, isHostile: true },
-    'Z': { id: "zombie_1", name: "Shambling Zombie", sprite: "🧟", maxHp: 22, ac: 8, attackMod: 3, damageDie: 6, isHostile: true },
-    'K': { id: "hollow_king", name: "The Hollow King", sprite: "💀👑", maxHp: 120, ac: 18, attackMod: 8, damageDie: 12, isHostile: true },
-    'E': { id: "elara_1", name: "Elara Mossbind", sprite: "🧙‍♀️", maxHp: 18, ac: 12, attackMod: 4, damageDie: 6, isHostile: false },
-    'B': { id: "barkeep_1", name: "Barkeep Dunna", sprite: "🍺", maxHp: 16, ac: 11, attackMod: 3, damageDie: 4, isHostile: false }
+    // NPCs (talkable)
+    H: { id: "jila_mossbind", name: "Jila Mossbind", sprite: "🧙\u200d♀️", maxHp: 18, ac: 12, attackMod: 0, damageDie: 4, isHostile: false },
+    C: { id: "captain_haddow", name: "Captain Remith Haddow", sprite: "💂", maxHp: 30, ac: 16, attackMod: 4, damageDie: 8, isHostile: false },
+    M: { id: "katon_wanderer", name: "Katon the Wanderer", sprite: "🥾", maxHp: 20, ac: 13, attackMod: 3, damageDie: 6, isHostile: false },
+    F: { id: "fenwick_blacksmith", name: "Old Fenwick", sprite: "⚒️", maxHp: 22, ac: 12, attackMod: 3, damageDie: 6, isHostile: false },
+    B: { id: "dunna_barkeep", name: "Barkeep Dunna", sprite: "🍺", maxHp: 16, ac: 11, attackMod: 2, damageDie: 4, isHostile: false },
+    A: { id: "resad_priest", name: "Brother Resad", sprite: "🕯️", maxHp: 20, ac: 11, attackMod: 0, damageDie: 4, isHostile: false },
+    // Enemies
+    S: { id: "slime_1", name: "Corrosive Slime", sprite: "🟢", maxHp: 15, ac: 10, attackMod: 3, damageDie: 6, isHostile: true, xp: 25 },
+    W: { id: "wolf_1", name: "Dire Wolf", sprite: "🐺", maxHp: 25, ac: 14, attackMod: 5, damageDie: 8, isHostile: true, xp: 60 },
+    Z: { id: "zombie_1", name: "Shambling Zombie", sprite: "🧟", maxHp: 22, ac: 8, attackMod: 3, damageDie: 6, isHostile: true, xp: 40, tags: ["undead"] },
+    K: { id: "hollow_king", name: "The Hollow King", sprite: "💀👑", maxHp: 120, ac: 18, attackMod: 8, damageDie: 12, isHostile: true, xp: 0,
+         openingLine: "\"You walked all this way to say my name. I stopped keeping it.\"",
+         defeatLine: "\"Stay,\" the king says, to no one. The room is only a room after that." },
+    // Interactables (not NPCs)
+    T: { id: "chest", name: "Old Chest", sprite: "🎁", maxHp: 1, ac: 5, attackMod: 0, damageDie: 1, isHostile: false }
   } as Record<string, EntityData>,
 
-  // Simple NPC dialogue data - keyed by entity ID
-  npcDialogue: {
-    elara_1: {
-      name: "Elara Mossbind",
-      greeting: "Ah, a wanderer. The forest is troubled. Would you help me?",
-      dialogueOptions: [
-        { text: "Tell me more.", response: "The Rotted Barrow to the north holds dark secrets. I fear undead stir there." },
-        { text: "Not interested.", response: "I understand. Safe travels then." }
-      ]
-    },
-    barkeep_1: {
-      name: "Barkeep Dunna",
-      greeting: "Welcome to the Tipped Flagon! What brings you here?",
-      dialogueOptions: [
-        { text: "I'm looking for adventure.", response: "Hah! There's plenty of danger in these lands if you seek it. The barrow especially..." },
-        { text: "I'll take a drink.", response: "Coming right up. On the house for brave folk like you." }
-      ]
-    },
-    guard_1: {
-      name: "Village Guard",
-      greeting: "Greetings, adventurer. We could use someone with your skills.",
-      dialogueOptions: [
-        { text: "What's needed?", response: "The undead from the north have grown bold. Would you clear the barrow?" },
-        { text: "I'm passing through.", response: "Safe travels then. But stay sharp—darkness is stirring." }
-      ]
-    }
-  }
+  // Walk onto the tile to pick it up. The tile is cleared.
+  pickups: {
+    m: { itemId: "moonbloom_flower", text: "You pick a moonbloom. It is cold, and it closes slowly in your hand." },
+    h: { itemId: "fenwick_hammerhead", text: "Under a toppled stone: a hammerhead, pitted iron, with a hollow circle stamped on one face." },
+    j: { itemId: "crumbled_journal", text: "A journal, damp through. Most pages come away as paste. A few survive.", lore: "spring_spirits" }
+  } as Record<string, { itemId: string; text: string; lore?: string }>,
+
+  // Chests: one use each, per map.
+  chests: {
+    village: { flag: "chest_village", itemId: "bread_and_cheese", text: "Someone's lunch, wrapped in a cloth. You take it and say nothing." },
+    tavern: { flag: "chest_tavern", itemId: "ancient_coin", text: "Under the cellar rugs: one coin, very old, with a face worn smooth." }
+  } as Record<string, { flag: string; itemId: string; text: string }>,
+
+  // Stepping on a tile can change the world.
+  tileEvents: {
+    "=": { flag: "altar_touched", reach: "crypt_altar", text: "You lay a hand on the altar. A door above you lets go of its frame." }
+  } as Record<string, { flag: string; reach: string; text: string }>
 };
 
 export const ClassData = {
-  Fighter: {
-    hpBase: 10,
-    features: ["Action Surge", "Second Wind"],
-    primaryStat: "str"
-  },
-  Wizard: {
-    hpBase: 6,
-    features: ["Spellcasting", "Arcane Recovery"],
-    primaryStat: "int"
-  },
-  Rogue: {
-    hpBase: 8,
-    features: ["Sneak Attack", "Cunning Action"],
-    primaryStat: "dex"
-  }
-};
-
-// Simplified item data - placeholders
-export const ItemData: Record<string, { name: string; sprite: string }> = {
-  healing_potion: { name: "Healing Potion", sprite: "🧪" },
-  iron_sword: { name: "Iron Sword", sprite: "⚔️" },
-  leather_armor: { name: "Leather Armor", sprite: "🧥" },
-  blessed_amulet: { name: "Blessed Amulet", sprite: "✨" },
-  moonbloom_flower: { name: "Moonbloom Flower", sprite: "🌙" }
+  Fighter: { hpBase: 10, features: ["Action Surge", "Second Wind"], primaryStat: "str" },
+  Wizard: { hpBase: 6, features: ["Spellcasting", "Arcane Recovery"], primaryStat: "int" },
+  Rogue: { hpBase: 8, features: ["Sneak Attack", "Cunning Action"], primaryStat: "dex" }
 };

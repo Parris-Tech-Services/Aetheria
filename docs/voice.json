@@ -1,0 +1,32 @@
+{
+  "name": "Aetheria (DRAFT: inferred from the existing lore; for Josh to approve or change)",
+  "_note": "Woodland-edge village under the Hollow King's curse. Given names are short and plain; surnames are plant, craft and landscape words. The four default names that LLMs favour are retired as display names; ids stay so saves keep working.",
+
+  "given": {
+    "on": ["","","b","d","f","h","j","k","l","m","n","r","s","t","w","y"],
+    "v": ["a","e","i","o","u"],
+    "co": ["","n","n","r","l","d","k","s","th"],
+    "syllables": [1, 2, 2],
+    "length": [3, 7]
+  },
+  "surname": {
+    "mode": "word",
+    "words": ["Thistledown","Harrow","Wattle","Sallow","Coppice","Bracken","Teasel","Marram","Cobb","Fuller","Thack","Heron","Ketch","Dunnock","Lowther","Orrell","Pargeter","Skerry","Vetch","Mallow","Rudd","Culver","Haddow","Tolland","Quarrel","Nettle","Flint","Hobbs"]
+  },
+  "avoid": ["Elara","Theron","Mira","Aldric","Elias","Mara","Lyra","Kael","Thorne","Voss","Seraphina","Aria","Kevin"],
+  "max_surname_repeats": 1,
+
+  "place": {
+    "heads": ["Moss","Fen","Alder","Rot","Ash","Hollow","Wick","Bram","Tallow","Marl"],
+    "tails": ["bind","wick","barrow","fen","mere","stead","holt","gate","reach"],
+    "kinds": ["a woodland-edge hamlet","a drovers' tavern","a burial mound","a ruined waystation"]
+  },
+
+  "trades": ["herbalist","smith","barkeep","guard captain","hedge-priest","wanderer","tallow-maker","bee-keeper"],
+  "quirks": ["keeps a tally of favours owed","will not light a lamp before the bell","salts every doorway","counts steps aloud","mends what is not theirs","answers questions with a price"],
+  "wants": ["to be thanked by someone who does not know them","to see the barrow quiet for one night","to be proven right about a boundary stone","to pay off a debt without anyone learning it existed"],
+
+  "reserved": ["Elara Mossbind","Old Fenwick","Barkeep Dunna","Guard Captain Theron","Mira","Brother Aldric","The Hollow King"],
+  "banned_words": ["tapestry","testament","delve","whisper","echo","ozone"],
+  "banned_phrases": []
+}
